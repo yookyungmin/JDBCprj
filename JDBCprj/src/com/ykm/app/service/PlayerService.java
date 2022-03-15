@@ -24,24 +24,40 @@ public class PlayerService {
 	
 	
  	public List<Player> getList(int page) throws ClassNotFoundException, SQLException{
-		int start =1+(page-1)*10; //1, 11, 21, 31
-		int end = 5*page; // 5 10 15
+		int start =1+(page-1)*5; //
+		int end = 5*page; // page 2일떄 6 ~ 10
+		
 //		String sql = "SELECT *FROM ("
 //				+ "SELECT ROWNUM NUM, P.*FROM("
 //				+ "SELECT *FROM PLAYER WHERE TEAM_ID = 'K06')P"
 //				+ ")"
 //				+ "WHERE NUM BETWEEN ? AND ?";
-		String sql = "SELECT *FROM PLAYER_VIEW WHERE NUM BETWEEN ? AND ?";
 		
+//		String sql = "SELECT *FROM PLAYER_VIEW WHERE NUM BETWEEN ? AND ?";
+//		String sql = "SELECT *FROM ("
+//				+ "SELECT ROWNUM NUM, PLAYER.*FROM PLAYER WHERE TEAM_ID = 'K06'"
+//				+ ")"
+//				+ "WHERE NUM BETWEEN ? AND ?";  // TEAMID가 K06인선수들출력
+		
+		String sql = ""
+				+ "SELECT *FROM ("
+				+ "SELECT ROWNUM NUM, P.*FROM ("
+				+ "SELECT *FROM PLAYER ORDER BY PLAYER_ID DESC"
+				+ ")P"
+				+ ")"
+				+ "WHERE NUM BETWEEN ? AND ?";  //PLAYER ID 내림차순으로
+		
+
 
 		Class.forName(driver);
 		Connection con = DriverManager.getConnection(url, uid, pwd);
+		
 		PreparedStatement st = con.prepareStatement(sql); //? 사용시
+		st.setInt(1, start);
+		st.setInt(2, end);
 		
 //		Statement st = con.createStatement(); //실행도구
 		
-		st.setInt(1, start);
-		st.setInt(2, end);
 		ResultSet rs = st.executeQuery(); //쿼리 //메서드마다 만들어야됨 4줄은
 //		ResultSet rs = st.executeUpdate(sql); //insert, update, delete 조작언어 사용할떄
 
@@ -72,12 +88,43 @@ public class PlayerService {
 		st.close();
 		con.close();	//역순으로 닫기 
 		
-	
 		return list;
+	}
+ 	
+	//Scalar값을 얻어온다(단일값)
+ 	
+	public int getCount() throws ClassNotFoundException, SQLException {
+		//갯수확인
+		int count = 0;
+		String sql = "SELECT COUNT (PLAYER_ID) COUNT FROM PLAYER";
+				
+
+
+		Class.forName(driver);
+		Connection con = DriverManager.getConnection(url, uid, pwd);
+
+
+		
+		Statement st = con.createStatement(); //실행도구
+		
+		//prepared아닐시엔 executequery에 sql 붙여줌
+		ResultSet rs = st.executeQuery(sql); //쿼리 //메서드마다 만들어야됨 4줄은
+
+
+		List<Player> list = new ArrayList<Player>(); 
+		
+		if(rs.next())
+		count = rs.getInt("COUNT");
+		
+		rs.close();
+		st.close();
+		con.close();	//역순으로 닫기 
+		
+		return count;
 	}
 
 	public int insert(Player player) throws SQLException, ClassNotFoundException {
-		
+		//데이터추가
 
 		int id= player.getId();
 		String name= player.getName();
@@ -121,8 +168,8 @@ public class PlayerService {
 		
 	}
 	public int update(Player player) throws SQLException, ClassNotFoundException {
-		
-		
+		//데이터 수정
+	
 		String name= player.getName();
 		String posi =player.getPosi();
 		int backno = player.getBackno();
@@ -165,7 +212,7 @@ public class PlayerService {
 	}
 	
 	public int delete(int id) throws ClassNotFoundException, SQLException {
-		
+		//데이터 삭제
 		String url = "jdbc:oracle:thin:@localhost:1521/xe";
 		String sql = "DELETE PLAYER WHERE PLAYER_ID = ?";
 		
@@ -185,4 +232,5 @@ public class PlayerService {
 		con.close();	//역순으로 닫기 
 		return result;
 	}
+
 }
