@@ -12,6 +12,7 @@ import java.util.List;
 import com.ykm.app.entity.Player;
 
 import oracle.net.aso.p;
+import oracle.net.aso.s;
 
 
 
@@ -22,15 +23,26 @@ public class PlayerService {
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	
 	
- 	public List<Player> getList() throws ClassNotFoundException, SQLException{
-		
-		String sql = "SELECT *FROM PLAYER";
+ 	public List<Player> getList(int page) throws ClassNotFoundException, SQLException{
+		int start =1+(page-1)*10; //1, 11, 21, 31
+		int end = 5*page; // 5 10 15
+//		String sql = "SELECT *FROM ("
+//				+ "SELECT ROWNUM NUM, P.*FROM("
+//				+ "SELECT *FROM PLAYER WHERE TEAM_ID = 'K06')P"
+//				+ ")"
+//				+ "WHERE NUM BETWEEN ? AND ?";
+		String sql = "SELECT *FROM PLAYER_VIEW WHERE NUM BETWEEN ? AND ?";
 		
 
 		Class.forName(driver);
 		Connection con = DriverManager.getConnection(url, uid, pwd);
-		Statement st = con.createStatement(); //실행도구
-		ResultSet rs = st.executeQuery(sql); //쿼리 //메서드마다 만들어야됨 4줄은
+		PreparedStatement st = con.prepareStatement(sql); //? 사용시
+		
+//		Statement st = con.createStatement(); //실행도구
+		
+		st.setInt(1, start);
+		st.setInt(2, end);
+		ResultSet rs = st.executeQuery(); //쿼리 //메서드마다 만들어야됨 4줄은
 //		ResultSet rs = st.executeUpdate(sql); //insert, update, delete 조작언어 사용할떄
 
 		List<Player> list = new ArrayList<Player>(); 

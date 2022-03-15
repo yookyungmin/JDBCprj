@@ -3,9 +3,12 @@ package com.ykm.app.console;
 import java.security.Provider.Service;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Scanner;
 
 import com.ykm.app.entity.Player;
 import com.ykm.app.service.PlayerService;
+
+import oracle.net.aso.n;
 
 public class PlayerConsole {
 	
@@ -15,10 +18,10 @@ public class PlayerConsole {
 		service = new PlayerService();
 	}
 	public void printPlayerList() throws ClassNotFoundException, SQLException {
-		List<Player> list = service.getList(); //list로 얻어서 service가 제공하는 목록을
+		List<Player> list = service.getList(1); //list로 얻어서 service가 제공하는 목록을
 		
 		System.out.println("==========================================================");
-		System.out.printf("<베스트 일레븐> 총 %d 게시글\n",12);
+		System.out.printf("<K06선수목록> 총 %d 선수명\n",11);
 		System.out.println("==========================================================");
 	
 		for(Player n:list) {
@@ -37,8 +40,14 @@ public class PlayerConsole {
 	}
 
 	public int inputPlayerMenu() {
-		// TODO Auto-generated method stub
-		return 0;
+		
+		Scanner sc = new Scanner(System.in);
+		
+		
+			System.out.print("1.상세조회/ 2.이전/ 3.다음/ 4.글쓰기/ 5.종료> ");
+			int menu = Integer.parseInt(sc.nextLine());
+			
+		return menu;
 	}
 
 }
