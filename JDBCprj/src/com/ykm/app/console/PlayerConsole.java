@@ -23,13 +23,13 @@ public class PlayerConsole {
 	public PlayerConsole() {
 		service = new PlayerService();
 		page = 1; //페이지 기본값
-		searchField = "";
+		searchField = "PLAYER_ID";
 		searchWord = "";
 
 
 	}
 	public void printPlayerList() throws ClassNotFoundException, SQLException {
-		List<Player> list = service.getList(page); //list로 얻어서 service가 제공하는 목록을
+		List<Player> list = service.getList(page,searchField, searchWord); //list로 얻어서 service가 제공하는 목록을
 		
 		int count = service.getCount(); //현재 데이터베이스의 테이블 데이터 갯수
 		int lastpage = count/5; //

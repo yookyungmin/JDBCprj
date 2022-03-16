@@ -23,7 +23,8 @@ public class PlayerService {
 	private String driver = "oracle.jdbc.driver.OracleDriver";
 	
 	
- 	public List<Player> getList(int page) throws ClassNotFoundException, SQLException{
+	
+ 	public List<Player> getList(int page, String field, String query) throws ClassNotFoundException, SQLException{
 		int start =1+(page-1)*5; //
 		int end = 5*page; // page 2일떄 6 ~ 10
 		
@@ -45,7 +46,7 @@ public class PlayerService {
 				+ "SELECT *FROM PLAYER ORDER BY PLAYER_ID DESC"
 				+ ")P"
 				+ ")"
-				+ "WHERE NUM BETWEEN ? AND ?";  //PLAYER ID 내림차순으로
+				+ "WHERE "+field+" LIKE ? AND NUM BETWEEN ? AND ?";  //PLAYER ID 내림차순으로
 		
 
 
@@ -53,8 +54,9 @@ public class PlayerService {
 		Connection con = DriverManager.getConnection(url, uid, pwd);
 		
 		PreparedStatement st = con.prepareStatement(sql); //? 사용시
-		st.setInt(1, start);
-		st.setInt(2, end);
+		st.setString(1, "%"+query+"%");
+		st.setInt(2, start);
+		st.setInt(3, end);
 		
 //		Statement st = con.createStatement(); //실행도구
 		
